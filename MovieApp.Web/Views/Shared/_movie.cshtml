@@ -1,0 +1,27 @@
+﻿
+@model Movie
+
+<div class="card mb-3"  >
+    <div class="row" >
+        <div class="col-md-3">
+            <img src="/img/@Model.ImageUrl"  alt="@Model.Title" />
+        </div>
+        <div class="col-md-9">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title</h5>
+                <div>
+                    <a class="btn btn-dark" asp-controller="Movies" asp-action="Details" asp-route-id="@Model.MovieId">details</a>
+                    <a class="btn btn-warning" asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieId">edit</a>
+
+
+                    <form asp-controller="Movies" asp-action="Delete" method="post" style="display:inline;">   @*form silme bu movie controllera gider*@
+                        <input type="hidden" name="MovieId" value="@Model.Title" />
+                        <input type="hidden" name="MovieId" value="@Model.MovieId" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

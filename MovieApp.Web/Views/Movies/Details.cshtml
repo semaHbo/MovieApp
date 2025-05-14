@@ -1,0 +1,35 @@
+﻿@model Movie
+
+<div class="card">
+    <div class="row"> 
+        <div class="col-md-3">
+            <img src="/img/@Model.ImageUrl" class="card-img" />
+        </div>
+        <div class="col-md-9">
+            <div class="card-body">
+                <h5 class="card-title"> @Model.Title</h5>
+                <p class="card-text"> @Model.Description</p>
+                <p class="card-text">@Model.Director</p>
+                <ul>
+                    @if (Model.Players != null)    //oyuncu bilgisi girilmisse listeyi gonder
+                    {
+
+
+                        @foreach (var a in Model.Players)
+                        {
+                            <li>@a</li>
+                        }
+
+
+                    }
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+ </div>
+
+
+
+
