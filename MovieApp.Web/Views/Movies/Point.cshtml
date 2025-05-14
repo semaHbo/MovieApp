@@ -1,0 +1,35 @@
+﻿@model MovieApp.Web.Models.Movie
+
+@{
+    ViewData["Title"] = "Film Puanla";
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@Model.Title</h5>
+            <p class="card-text">@Model.Description</p>
+            <dl class="row">
+                <dt class="col-sm-3">Yönetmen</dt>
+                <dd class="col-sm-9">@Model.Director</dd>
+                <dt class="col-sm-3">Mevcut Puan</dt>
+                <dd class="col-sm-9">@Model.Point</dd>
+            </dl>
+
+            <form asp-action="Point" method="post" class="mt-4">
+                <input type="hidden" asp-for="MovieId" />
+
+                <div class="mb-3">
+                    <label asp-for="Point" class="form-label">Yeni Puan</label>
+                    <input asp-for="Point" class="form-control" />
+                    <span asp-validation-for="Point" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+                <a asp-action="List" class="btn btn-secondary ms-2">Geri Dön</a>
+            </form>
+        </div>
+    </div>
+</div>

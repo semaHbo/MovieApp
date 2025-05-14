@@ -14,22 +14,22 @@ namespace MovieApp.Web.Controllers
         public MoviesController(ApplicationDbContext context)
             => _context = context;
 
-        // GET /Movies
+        // GET /Movies → /Movies/List
         public IActionResult Index()
             => RedirectToAction(nameof(List));
 
         // GET /Movies/List?id=2&q=arama
         public async Task<IActionResult> List(int? id, string q)
         {
-            // 1) Sorgu tabanını hazırla
+            // 1) DbContext üzerinden sorgu oluştur
             var query = _context.Movies.AsQueryable();
 
-            // 2) Genre filtresi
+            // 2) Genre filtreleme (opsiyonel)
             if (id.HasValue)
                 query = query.Where(m => m.GenreId == id.Value);
 
-            // 3) Arama filtresi
-            if (!string.IsNullOrEmpty(q))
+            // 3) Arama filtreleme (opsiyonel)
+            if (!string.IsNullOrWhiteSpace(q))
             {
                 var lower = q.ToLower();
                 query = query.Where(m =>
@@ -37,19 +37,16 @@ namespace MovieApp.Web.Controllers
                     m.Description.ToLower().Contains(lower));
             }
 
-            // 4) Veritabanından listeyi çek
+            // 4) Veritabanından çek
             var movies = await query.ToListAsync();
 
-            // 5) Arama terimini View'a taşı
+            // 5) Arama terimini ViewBag’e koy
             ViewBag.SearchQuery = q;
 
-            // 6) Modeli hazırla
-            var model = new MoviesViewModel
-            {
-                Movies = movies
-            };
+            // 6) ViewModel’e aktar
+            var model = new MoviesViewModel { Movies = movies };
 
-            // 7) "Movies.cshtml" görünümünü dön
+            // 7) “Movies.cshtml” view’ını döndür
             return View("Movies", model);
         }
 
@@ -65,7 +62,7 @@ namespace MovieApp.Web.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            // Tür listesini ViewBag ile taşı (halihazırda GenreRepository kullanılıyor)
+            // Tür listesini hala GenreRepository üzerinden getiriyoruz
             ViewBag.GenreList = new SelectList(GenreRepository.Genres, "GenreId", "Name");
             return View();
         }
@@ -113,7 +110,8 @@ namespace MovieApp.Web.Controllers
         }
 
         // GET /Movies/Delete?MovieId=5&Title=Foo
-        public async Task<IActionResult> Delete(int MovieId, string Title)
+        [HttpGet]
+         public async Task<IActionResult> Delete(int MovieId, string Title)
         {
             var movie = await _context.Movies.FindAsync(MovieId);
             if (movie != null)
@@ -132,7 +130,6 @@ namespace MovieApp.Web.Controllers
             var movie = await _context.Movies.FindAsync(id);
             if (movie == null) return NotFound();
 
-            ViewBag.GenreList = new SelectList(GenreRepository.Genres, "GenreId", "Name", movie.GenreId);
             return View(movie);
         }
 
@@ -145,8 +142,9 @@ namespace MovieApp.Web.Controllers
             {
                 movie.Point = m.Point;
                 await _context.SaveChangesAsync();
+                TempData["Message"] = $"{movie.Title} puanı güncellendi.";
             }
-            return View(movie);
+            return RedirectToAction(nameof(List));
         }
     }
 }
